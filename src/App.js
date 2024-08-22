@@ -30,6 +30,7 @@ function App() {
       gtag('config', 'AW-16671117244');
     `;
 
+    
     document.body.appendChild(script1);
     document.body.appendChild(script2);
   },[]);
