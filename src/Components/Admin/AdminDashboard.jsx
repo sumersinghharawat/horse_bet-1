@@ -23,8 +23,15 @@ const convertHour = (data) => {
   const date = new Date(data);
   const hours = date.getHours();
   const minutes = date.getMinutes();
+  const ampm = hours >= 12 ? "PM" : "AM";
 
-  return hours + ":" + minutes;
+  return (
+    (hours % 12 || 12).toString().padStart(2, '0') +
+    ":" +
+    minutes.toString().padStart(2, '0') +
+    "" +
+    ampm
+  );
 };
 export const AdminDashboard = () => {
   const auth = getAuth();
@@ -56,6 +63,9 @@ export const AdminDashboard = () => {
   const [loadingLive, setLoadingLive] = useState(false);
   const [adminBWPData, setAdminBWPData] = useState(0);
 
+  const [betMaxOddWin, setBetMaxOddWin] = useState(0);
+  const [betMaxOddPlc, setBetMaxOddPlc] = useState(0);
+
   useEffect(() => {
     db.collection("TimeData").onSnapshot((snapshot) => {
       setIndiaRace(snapshot.docs.map((doc) => doc.data())[0].Allrace);
@@ -72,15 +82,26 @@ export const AdminDashboard = () => {
       setNewRace(all_race);
     });
   }, [raceIndexNum]);
+
+  useEffect(() => {
+    db.collection("GeneralSetting")
+          .doc("optBALAApIh1cCTOZJOL")
+          .onSnapshot((snapshot) => {
+            const values = snapshot.data();
+            setBetMaxOddWin(values.MaxOddWin);
+            setBetMaxOddPlc(values.MaxOddPlc);
+          });
+  }, []);
+
   useEffect(() => {
     if (getCookie("access_token")) {
-      navigate(`/user/admin/:gP7ssoPxhkcaFPuPNIS9AXdv1BE3`);
+      navigate(`/user/admin/:T0xHihFaGFfgLyByPzMcyvHm8du1`);
     } else {
       navigate("/login");
     }
 
     db.collection("users")
-      .doc("gP7ssoPxhkcaFPuPNIS9AXdv1BE3")
+      .doc("T0xHihFaGFfgLyByPzMcyvHm8du1")
       .onSnapshot((snapshot) => {
         setAdminBWPData(snapshot.data()?.sc);
       });
@@ -90,7 +111,7 @@ export const AdminDashboard = () => {
     setLoadingg(true);
     e.preventDefault();
     axios
-      .get("https://horse-batting.onrender.com/api/allDataForCountry")
+      .get("https://horse-bet.onrender.com/api/allDataForCountry")
       .then((data) => {
         setLoadingg(false);
         const country = [
@@ -129,7 +150,7 @@ export const AdminDashboard = () => {
     try {
       await axios
         .get(
-          `https://horse-batting.onrender.com/api/getTimesOfRacing?id=${uid}`
+          `https://horse-bet.onrender.com/api/getTimesOfRacing?id=${uid}`
         )
         .then((res) => {
           setLoadingg(false);
@@ -173,7 +194,7 @@ export const AdminDashboard = () => {
     try {
       await axios
         .get(
-          `https://horse-batting.onrender.com/api/getTimesOfRacing?id=${uid}`
+          `https://horse-bet.onrender.com/api/getTimesOfRacing?id=${uid}`
         )
         .then((res) => {
           setLoadingg(false);
@@ -195,7 +216,7 @@ export const AdminDashboard = () => {
     try {
       await axios
         .get(
-          `https://horse-batting.onrender.com/api/getTimesOfRacing?id=${uid}`
+          `https://horse-bet.onrender.com/api/getTimesOfRacing?id=${uid}`
         )
         .then((res) => {
           setLoadingg(false);
@@ -226,7 +247,7 @@ export const AdminDashboard = () => {
       try {
         await axios
           .get(
-            `https://horse-batting.onrender.com/api/getliveData?id=${data?.uid}&streamId=${id}`
+            `https://horse-bet.onrender.com/api/getliveData?id=${data?.uid}&streamId=${id}`
           )
           .then((res) => {
             console.log("ress", res);
@@ -250,7 +271,7 @@ export const AdminDashboard = () => {
       <div>
         <Sidebar />
         <div className="user-data-tabel">
-          {user?.uid === "gP7ssoPxhkcaFPuPNIS9AXdv1BE3" && (
+          {user?.uid === "T0xHihFaGFfgLyByPzMcyvHm8du1" && (
             <div
               style={{
                 display: "flex",
@@ -306,7 +327,7 @@ export const AdminDashboard = () => {
                 Delete
               </Button>
 
-              <p style={{ margin: "0px" }}>
+              <p style={{ margin: "0px" }} key={0}>
                 BWP Daily Service Charge : {adminBWPData}
               </p>
             </div>
@@ -349,6 +370,7 @@ export const AdminDashboard = () => {
                       });
                     }
                   }}
+                  key={index}
                 >
                   {items || "IND"}
                 </button>
@@ -372,6 +394,7 @@ export const AdminDashboard = () => {
                       items === "BLR" ||
                       items === "CAL" ||
                       items === "MAD" ||
+                      items === "DEL" ||
                       items === "MMB"
                     ) {
                       const array = newRace.filter((e) => {
@@ -497,7 +520,7 @@ export const AdminDashboard = () => {
                   )}
               </div>
 
-              {user?.uid === "gP7ssoPxhkcaFPuPNIS9AXdv1BE3" && (
+              {user?.uid === "T0xHihFaGFfgLyByPzMcyvHm8du1" && (
                 <>
                   <Button
                     className={styles["bet-live-button"]}
@@ -576,7 +599,7 @@ export const AdminDashboard = () => {
                     >
                       Stop Bet :{" "}
                     </p>
-                    <label class="switch">
+                    <label className="switch">
                       <input
                         type="checkbox"
                         checked={
@@ -612,7 +635,7 @@ export const AdminDashboard = () => {
                           }
                         }}
                       />
-                      <span class="slider round"></span>
+                      <span className="slider round"></span>
                     </label>
                   </div>
                 </>
@@ -659,7 +682,7 @@ export const AdminDashboard = () => {
               </thead>
               <tbody>
                 {!!oddData &&
-                  user?.uid === "gP7ssoPxhkcaFPuPNIS9AXdv1BE3" &&
+                  user?.uid === "T0xHihFaGFfgLyByPzMcyvHm8du1" &&
                   oddData?.participants?.map((e, index) => {
                     return (
                       <tr index={index}>
@@ -669,10 +692,18 @@ export const AdminDashboard = () => {
                         <td>{e.data.jockey}</td>
                         <td>{e.data.trainer}</td>
                         <td>
-                          {oddData?.markets[0]?.selections[index].odds?.price}
+                          {Math.min(
+                            oddData?.markets[0]?.selections[index]
+                              .odds?.price || 0,
+                            parseFloat(betMaxOddWin)
+                          )}
                         </td>
                         <td>
-                          {oddData?.markets[1]?.selections[index].odds?.price}
+                        {Math.min(
+                          oddData?.markets[1]?.selections[index]
+                            .odds?.price || 0,
+                          parseFloat(betMaxOddPlc)
+                        )}
                         </td>
                         <td>
                           <FiEdit

@@ -12,7 +12,6 @@ import { Context } from "../../../App";
 import { UserBetModal } from "./UserBetModal";
 import { ImVideoCamera } from "react-icons/im";
 import ReactLoading from "react-loading";
-
 import axios from "axios";
 import { ReactComponent as NoRace } from "../../../Assets/NoRace.svg";
 
@@ -48,6 +47,23 @@ export const Dashboard = () => {
   const [allCountry, setAllCountry] = useState([]);
   const [countryState, setCountryState] = useState([]);
   const [liveVideoData, setLiveVideoData] = useState({});
+
+  const [betMaxAmount, setBetMaxAmount] = useState(0);
+  const [betMinAmount, setBetMinAmount] = useState(0);
+  const [betMaxOddWin, setBetMaxOddWin] = useState(0);
+  const [betMaxOddPlc, setBetMaxOddPlc] = useState(0);
+
+  useEffect(() => {
+    db.collection("GeneralSetting")
+          .doc("optBALAApIh1cCTOZJOL")
+          .onSnapshot((snapshot) => {
+            const values = snapshot.data();
+            setBetMaxAmount(values.MaxBet);
+            setBetMinAmount(values.MinBet);
+            setBetMaxOddWin(values.MaxOddWin);
+            setBetMaxOddPlc(values.MaxOddPlc);
+          });
+  }, []);
 
   useEffect(() => {
     db.collection("TimeData").onSnapshot((snapshot) => {
@@ -103,7 +119,7 @@ export const Dashboard = () => {
       try {
         await axios
           .get(
-            `https://horse-batting.onrender.com/api/getliveData?id=${data?.uid}&streamId=${id}`
+            `https://horse-bet.onrender.com/api/getliveData?id=${data?.uid}&streamId=${id}`
           )
           .then((res) => {
             console.log("ress", res);
@@ -154,14 +170,12 @@ export const Dashboard = () => {
       <Toaster position="top-right" reverseOrder={false} />
       <marquee className={styles["marq"]} bgcolor="#cdc6eb"
         direction="left" loop="1">
-        <div style={{
-          color: "#000000"
-        }}>
-      For All Support What's App Message with email id to  8669646969 / 8669656969
-
-      </div>
-
+        <span style={{ color: '#FF0000', fontWeight: 'bold' }}>🚨 IMPORTANT ANNOUNCEMENT 🚨</span>{' '}
+        <span style={{ color: '#000000' }}>
+        Kindly  Call for Any Support Help <a href="tel:+918669646969">86 69 64 69 69</a> / <a href="tel:+918669656969">86 69 65 69 69</a> & What's app your Payment Screenshot & email id to 86 69 64 69 69.
+        </span>
       </marquee>
+      
       <div className={styles["user-race-data-main"]}>
         <div className={styles["user-race-header"]}>
           <p className={styles["user-race-title"]}>Today's Race</p>
@@ -243,6 +257,7 @@ export const Dashboard = () => {
                     items === "BLR" ||
                     items === "CAL" ||
                     items === "MAD" ||
+                    items === "DEL" ||
                     items === "MMB"
                   ) {
                     const array = allData.filter((e) => {
@@ -542,12 +557,18 @@ export const Dashboard = () => {
                                     participants?.status?.toLowerCase() ===
                                       "published" &&
                                       Number(
-                                        participants?.markets[0]?.selections[index]
-                                          .odds?.price
+                                        Math.min(
+                                          participants?.markets[0]?.selections[index]
+                                            .odds?.price || 0,
+                                          parseFloat(betMaxOddWin)
+                                        )
                                       ) !== 0 &&
                                       Number(
-                                        participants?.markets[0]?.selections[index]
-                                          .odds?.price
+                                        Math.min(
+                                          participants?.markets[0]?.selections[index]
+                                            .odds?.price || 0,
+                                          parseFloat(betMaxOddWin)
+                                        )
                                       ) !== 0.0 &&
                                       e.data.isRunner
                                       ? false
@@ -558,14 +579,18 @@ export const Dashboard = () => {
                                       participants?.status?.toLowerCase() ===
                                         "published" &&
                                         Number(
-                                          participants?.markets[0]?.selections[
-                                            index
-                                          ].odds?.price
+                                          Math.min(
+                                            participants?.markets[0]?.selections[index]
+                                              .odds?.price || 0,
+                                            parseFloat(betMaxOddWin)
+                                          )
                                         ) !== 0 &&
                                         Number(
-                                          participants?.markets[0]?.selections[
-                                            index
-                                          ].odds?.price
+                                          Math.min(
+                                            participants?.markets[0]?.selections[index]
+                                              .odds?.price || 0,
+                                            parseFloat(betMaxOddWin)
+                                          )
                                         ) !== 0.0 &&
                                         e.data.isRunner
                                         ? "pointer"
@@ -584,9 +609,11 @@ export const Dashboard = () => {
                                       ...winPlc,
                                       type: "WIN",
                                       value:
-                                        participants?.markets[0]?.selections[
-                                          index
-                                        ].odds?.price,
+                                      Math.min(
+                                        participants?.markets[0]?.selections[index]
+                                          .odds?.price || 0,
+                                        parseFloat(betMaxOddWin)
+                                      ),
                                       jockey_name: e.data.jockey,
                                       horce_number: e.data.horseNumber,
                                       time: new Date().getTime(),
@@ -596,8 +623,11 @@ export const Dashboard = () => {
                                     setWalletModal(true);
                                   }}>
                                   {
-                                    participants?.markets[0]?.selections[index]
-                                      .odds?.price
+                                    Math.min(
+                                      participants?.markets[0]?.selections[index]
+                                        .odds?.price || 0,
+                                      parseFloat(betMaxOddWin)
+                                    )
                                   }
                                 </button>
                                 <button
@@ -605,12 +635,18 @@ export const Dashboard = () => {
                                     participants?.status?.toLowerCase() ===
                                       "published" &&
                                       Number(
-                                        participants?.markets[0]?.selections[index]
-                                          .odds?.price
+                                        Math.min(
+                                          participants?.markets[1]?.selections[index]
+                                            .odds?.price || 0,
+                                          parseFloat(betMaxOddPlc)
+                                        )
                                       ) !== 0 &&
                                       Number(
-                                        participants?.markets[0]?.selections[index]
-                                          .odds?.price
+                                        Math.min(
+                                          participants?.markets[1]?.selections[index]
+                                            .odds?.price || 0,
+                                          parseFloat(betMaxOddPlc)
+                                        )
                                       ) !== 0.0 &&
                                       e.data.isRunner
                                       ? false
@@ -621,14 +657,18 @@ export const Dashboard = () => {
                                       participants?.status?.toLowerCase() ===
                                         "published" &&
                                         Number(
-                                          participants?.markets[1]?.selections[
-                                            index
-                                          ].odds?.price
+                                          Math.min(
+                                            participants?.markets[1]?.selections[index]
+                                              .odds?.price || 0,
+                                            parseFloat(betMaxOddPlc)
+                                          )
                                         ) !== 0 &&
                                         Number(
-                                          participants?.markets[1]?.selections[
-                                            index
-                                          ].odds?.price
+                                          Math.min(
+                                            participants?.markets[1]?.selections[index]
+                                              .odds?.price || 0,
+                                            parseFloat(betMaxOddPlc)
+                                          )
                                         ) !== 0.0 &&
                                         e.data.isRunner
                                         ? "pointer"
@@ -646,9 +686,11 @@ export const Dashboard = () => {
                                       ...winPlc,
                                       type: "PLC",
                                       value:
-                                        participants?.markets[1]?.selections[
-                                          index
-                                        ].odds?.price,
+                                      Math.min(
+                                        participants?.markets[1]?.selections[index]
+                                          .odds?.price || 0,
+                                        parseFloat(betMaxOddPlc)
+                                      ),
                                       jockey_name: e.data.jockey,
                                       horce_number: e.data.horseNumber,
                                       time: new Date().getTime(),
@@ -658,8 +700,11 @@ export const Dashboard = () => {
                                     setWalletModal(true);
                                   }}>
                                   {
-                                    participants?.markets[1]?.selections[index]
-                                      .odds?.price
+                                    Math.min(
+                                      participants?.markets[1]?.selections[index]
+                                        .odds?.price || 0,
+                                      parseFloat(betMaxOddPlc)
+                                    )
                                   }
                                 </button>
                               </>
@@ -732,7 +777,7 @@ export const Dashboard = () => {
                         {e?.venue}
                       </div>
                       <div className={styles["bet-all-list-race-details"]}>
-                        <span>race {e.data.raceNumber}</span>
+                        <span>{`race ${e.data.raceNumber}`}</span>
                         <span style={{ fontWeight: 700 }}>
                           {convertHour(e.startDate)}
                         </span>

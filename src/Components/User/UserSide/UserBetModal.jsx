@@ -21,18 +21,38 @@ export const UserBetModal = ({ walletModal, setWalletModal }) => {
   const [forProfitAdminData, setforProfitAdminData] = useState();
   const [userRaceData, setUserRaceData] = useState([]);
 
+
+  const [betMaxAmount, setBetMaxAmount] = useState(0);
+  const [betMinAmount, setBetMinAmount] = useState(0);
+  const [betMaxOddWin, setBetMaxOddWin] = useState(0);
+  const [betMaxOddPlc, setBetMaxOddPlc] = useState(0);
+
+  useEffect(() => {
+    db.collection("GeneralSetting")
+          .doc("optBALAApIh1cCTOZJOL")
+          .onSnapshot((snapshot) => {
+            const values = snapshot.data();
+            setBetMaxAmount(values.MaxBet);
+            setBetMinAmount(values.MinBet);
+            setBetMaxOddWin(values.MaxOddWin);
+            setBetMaxOddPlc(values.MaxOddPlc);
+          });
+  }, []);
+
   useEffect(() => {
     db.collection("users")
-      .doc("gP7ssoPxhkcaFPuPNIS9AXdv1BE3")
+      .doc("T0xHihFaGFfgLyByPzMcyvHm8du1")
       .onSnapshot((snapshot) => {
         setforProfitAdminData(snapshot.data());
       });
   }, []);
 
+
+
   useEffect(() => {
     const uid = getCookie("Uid");
     db.collection("participant")
-      .doc("gP7ssoPxhkcaFPuPNIS9AXdv1BE3")
+      .doc("T0xHihFaGFfgLyByPzMcyvHm8du1")
       .onSnapshot((snapshot) => {
         setParticipant(snapshot.data()?.data);
       });
@@ -57,7 +77,7 @@ export const UserBetModal = ({ walletModal, setWalletModal }) => {
     setbetLoading(true);
     if (Number(betAmount) <= Number(userData.amount)) {
       await db.collection("participant")
-        .doc("gP7ssoPxhkcaFPuPNIS9AXdv1BE3")
+        .doc("T0xHihFaGFfgLyByPzMcyvHm8du1")
         .set({
           data: [...participant, winPlc],
         });
@@ -85,7 +105,7 @@ export const UserBetModal = ({ walletModal, setWalletModal }) => {
               setWalletModal(false);
               setBetAmount();
               db.collection("users")
-                .doc("gP7ssoPxhkcaFPuPNIS9AXdv1BE3")
+                .doc("T0xHihFaGFfgLyByPzMcyvHm8du1")
                 .update({
                   ...forProfitAdminData,
                   sc:
@@ -118,7 +138,7 @@ export const UserBetModal = ({ walletModal, setWalletModal }) => {
 
             <div className={styles["wallet-calc"]}>
               <p>
-                Odds - {winPlc.type} : {winPlc.value}
+                Odds - {winPlc.type} : {winPlc.type === "PLC" ? (winPlc.value >= parseFloat(betMaxOddPlc) ? betMaxOddPlc : winPlc.value) : (winPlc.type === "WIN" ? (winPlc.value >= parseFloat(betMaxOddWin) ? betMaxOddWin : winPlc.value) : 0)}
               </p>
               {Number(betAmount) + (Number(betAmount) * 10) / 100 <=
                 Number(userData?.amount) ? (
@@ -138,13 +158,13 @@ export const UserBetModal = ({ walletModal, setWalletModal }) => {
                 <Form.Label>Amount</Form.Label>
                 <Form.Control
                   type="number"
-                  min={100}
-                  max={25000}
+                  min={parseFloat(betMinAmount)}
+                  max={parseFloat(betMaxAmount)}
                   value={betAmount}
                   name="amount"
                   placeholder="Enter Amount"
                   onChange={(e) => {
-                    if (e.target.value < 100 || e.target.value > 25000) {
+                    if (e.target.value < parseFloat(betMinAmount) || e.target.value > parseFloat(betMaxAmount)) {
                       setShowValue(true);
                     } else {
                       setShowValue(false);
@@ -153,7 +173,9 @@ export const UserBetModal = ({ walletModal, setWalletModal }) => {
                         user_amount: Number(e.target.value),
                         dividend: 0,
                         potential_amount:
-                          Number(e.target.value) * Number(winPlc.value) +
+                          Number(e.target.value) * Number(
+                            winPlc.type === "PLC" ? (winPlc.value >= parseFloat(betMaxOddPlc) ? parseFloat(betMaxOddPlc) : winPlc.value) : (winPlc.type === "WIN" ? (winPlc.value >= parseFloat(betMaxOddWin) ? parseFloat(betMaxOddWin) : winPlc.value) : 0)
+                        ) +
                           Number(e.target.value),
                       });
                     }
@@ -161,18 +183,16 @@ export const UserBetModal = ({ walletModal, setWalletModal }) => {
                   }}
                 />
               </Form.Group>
-              {showValue && betAmount !== 0 ? (
+              {(showValue & betAmount !== 0) ? (
                 <p
                   style={{
                     color: "red",
                   }}
                 >
-                  {" "}
-                  Please enter a minimum 100 and maximum 25000 amount
+                  Please enter a minimum {betMinAmount} and maximum {betMaxAmount} amount
                 </p>
-              ) : (
-                ""
-              )}
+              ):""}
+              
               <hr style={{ color: "#866afb" }} />
               {betAmount > 0 && (
                 <>
@@ -200,12 +220,13 @@ export const UserBetModal = ({ walletModal, setWalletModal }) => {
                   />
                 ) : (
                   betAmount > 0 && (
+                    
                     <Button
                       disabled={
                         Number(betAmount) + (Number(betAmount) * 10) / 100 <=
                           Number(userData?.amount) &&
-                          betAmount >= 100 &&
-                          betAmount <= 25000
+                          betAmount >= parseFloat(betMinAmount) &&
+                          betAmount <= parseFloat(betMaxAmount)
                           ? false
                           : true
                       }
@@ -214,7 +235,7 @@ export const UserBetModal = ({ walletModal, setWalletModal }) => {
                         handleSubmit();
                       }}
                     >
-                      Confirm
+                     Confirm
                     </Button>
                   )
                 )}

@@ -57,7 +57,7 @@ const BetTable = () => {
   }, []);
   useEffect(() => {
     db.collection("participant")
-      .doc("gP7ssoPxhkcaFPuPNIS9AXdv1BE3")
+      .doc("T0xHihFaGFfgLyByPzMcyvHm8du1")
       .onSnapshot((snapshot) => {
         setBetData(snapshot.data()?.data);
       });
@@ -76,7 +76,7 @@ const BetTable = () => {
   }, [betData]);
   useEffect(() => {
     db.collection("users")
-      .doc("gP7ssoPxhkcaFPuPNIS9AXdv1BE3")
+      .doc("T0xHihFaGFfgLyByPzMcyvHm8du1")
       .onSnapshot((snapshot) => {
         setAdminBWPData(snapshot.data()?.sc);
       });
@@ -84,7 +84,7 @@ const BetTable = () => {
 
   let totalPotentialAmountDisabled = 0;
   let totalUserAmountLoss = 0;
-  console.log("betData", betData.filter((d) => d.email === "kulkarnispurs23@gmail.com"))
+  // console.log("betData", betData.filter((d) => d.email === "kulkarnispurs23@gmail.com"))
   // Iterate through the data array
   betData?.forEach((entry) => {
     if (entry.status === "enabled") {
@@ -181,6 +181,7 @@ const BetTable = () => {
                       });
                     }
                   }}
+                  key={index}
                 >
                   {items || "IND"}
                 </button>
@@ -204,6 +205,7 @@ const BetTable = () => {
                       items === "BLR" ||
                       items === "CAL" ||
                       items === "MAD" ||
+                      items === "DEL" ||
                       items === "MMB"
                     ) {
                       const array = indiaRace.filter((e) => {
@@ -357,7 +359,7 @@ const BetTable = () => {
                 </tr>
               </thead>
               <tbody>
-                {user?.uid === "gP7ssoPxhkcaFPuPNIS9AXdv1BE3" &&
+                {user?.uid === "T0xHihFaGFfgLyByPzMcyvHm8du1" &&
                   raceWiseBetData?.map((e, index) => {
                     return (
                       <tr index={index}>

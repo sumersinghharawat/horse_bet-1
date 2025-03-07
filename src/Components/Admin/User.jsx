@@ -60,7 +60,7 @@ const User = () => {
           }}
         >
 
-          {user?.uid === "gP7ssoPxhkcaFPuPNIS9AXdv1BE3" && (
+          {user?.uid === "T0xHihFaGFfgLyByPzMcyvHm8du1" && (
             <div
               style={{
                 display: "flex",
@@ -113,9 +113,9 @@ const User = () => {
               </tr>
             </thead>
             <tbody>
-              {user?.uid === "gP7ssoPxhkcaFPuPNIS9AXdv1BE3" && (<>{adminTableData?.map((e, index) => {
+              {user?.uid === "T0xHihFaGFfgLyByPzMcyvHm8du1" && (<>{adminTableData?.map((e, index) => {
                 return (
-                  <tr index={index}>
+                  <tr index={index} key={e.uid}>
                     <td>{e.uid}</td>
                     <td>{e.email}</td>
                     <td>{e.amount}</td>

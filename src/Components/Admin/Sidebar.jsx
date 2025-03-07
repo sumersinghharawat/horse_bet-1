@@ -9,7 +9,7 @@ import SideNav, {
 import "@trendmicro/react-sidenav/dist/react-sidenav.css";
 import { signOut } from "firebase/auth";
 
-import { FaUserAlt, FaUsers } from "react-icons/fa";
+import { FaCog, FaUserAlt, FaUsers } from "react-icons/fa";
 import { MdAccessTimeFilled } from "react-icons/md";
 import { useNavigate } from "react-router";
 import { getAuth } from "firebase/auth";
@@ -58,7 +58,7 @@ export const Sidebar = () => {
         <NavItem
           eventKey="home"
           onClick={() => {
-            navigate(`/user/admin/usertable/:gP7ssoPxhkcaFPuPNIS9AXdv1BE3`);
+            navigate(`/user/admin/usertable/:T0xHihFaGFfgLyByPzMcyvHm8du1`);
           }}
         >
           <NavIcon style={{ opacity: "1" }}>
@@ -70,7 +70,7 @@ export const Sidebar = () => {
           selected
           eventKey="charts"
           onClick={() => {
-            navigate(`/user/admin/:gP7ssoPxhkcaFPuPNIS9AXdv1BE3`);
+            navigate(`/user/admin/:T0xHihFaGFfgLyByPzMcyvHm8du1`);
           }}
         >
           <NavIcon style={{ opacity: "1" }}>
@@ -82,13 +82,25 @@ export const Sidebar = () => {
           selected
           eventKey="charts"
           onClick={() => {
-            navigate(`/user/admin/bettable/:gP7ssoPxhkcaFPuPNIS9AXdv1BE3`);
+            navigate(`/user/admin/bettable/:T0xHihFaGFfgLyByPzMcyvHm8du1`);
           }}
         >
           <NavIcon style={{ opacity: "1" }}>
             <FaUsers style={{ fill: "black" }} />
           </NavIcon>
           <NavText style={{ color: "black" }}>User Bet Data</NavText>
+        </NavItem>
+        <NavItem
+          selected
+          eventKey="charts"
+          onClick={() => {
+            navigate(`/user/admin/settings/:T0xHihFaGFfgLyByPzMcyvHm8du1`);
+          }}
+        >
+          <NavIcon style={{ opacity: "1" }}>
+            <FaCog style={{ fill: "black" }} />
+          </NavIcon>
+          <NavText style={{ color: "black" }}>Settings</NavText>
         </NavItem>
         <NavItem
           selected
